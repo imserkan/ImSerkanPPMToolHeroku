@@ -15,8 +15,8 @@ import static com.sislamoglu.ppmtool.security.SecurityConstants.SECRET;
 @Component
 public class JWTTokenProvider {
 
-    public String generateToken(Authentication authentication){
-        User user = (User)authentication.getPrincipal();
+    public String generateToken(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         Date now = new Date(System.currentTimeMillis());
 
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
@@ -36,27 +36,27 @@ public class JWTTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token){
-        try{
+    public boolean validateToken(String token) {
+        try {
             Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
             return true;
-        }catch (SignatureException ex){
+        } catch (SignatureException ex) {
             System.out.println("Invalid JWT Signature");
-        }catch (MalformedJwtException ex){
+        } catch (MalformedJwtException ex) {
             System.out.println("Invalid JWT Token");
-        }catch (ExpiredJwtException ex){
+        } catch (ExpiredJwtException ex) {
             System.out.println("Expired JWT Token");
-        }catch (UnsupportedJwtException ex){
+        } catch (UnsupportedJwtException ex) {
             System.out.println("Unsupported JWT Exception");
-        }catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             System.out.println("JWT Claims string is empty");
         }
         return false;
     }
 
-    public Long getUserIdFromJWT(String token){
+    public Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
-        String id = (String)claims.get("id");
+        String id = (String) claims.get("id");
         return Long.parseLong(id);
     }
 }

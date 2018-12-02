@@ -22,39 +22,46 @@ import static com.sislamoglu.ppmtool.security.SecurityConstants.TOKEN_PREFIX;
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JWTTokenProvider jwtTokenProvider;
+    private JWTTokenProvider tokenProvider;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest,
-                                    HttpServletResponse httpServletResponse,
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-        try{
+
+        try {
+
             String jwt = getJWTFromRequest(httpServletRequest);
-            if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)){
-                Long userId = jwtTokenProvider.getUserIdFromJWT(jwt);
-                User userDetails = userDetailsService.loadByUserId(userId);
+
+            if(StringUtils.hasText(jwt)&& tokenProvider.validateToken(jwt)){
+                Long userId = tokenProvider.getUserIdFromJWT(jwt);
+                User userDetails = customUserDetailsService.loadByUserId(userId);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, Collections.emptyList()
-                );
+                        userDetails, null, Collections.emptyList());
+
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }catch (Exception ex){
-            logger.error("Could not set user authentication in security context");
-        }
 
+            }
+
+        }catch (Exception ex){
+            logger.error("Could not set user authentication in security context", ex);
+        }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
+
+
     private String getJWTFromRequest(HttpServletRequest request){
         String bearerToken = request.getHeader(HEADER_STRING);
+
         if(StringUtils.hasText(bearerToken)&&bearerToken.startsWith(TOKEN_PREFIX)){
             return bearerToken.substring(7, bearerToken.length());
         }
+
         return null;
     }
 }
