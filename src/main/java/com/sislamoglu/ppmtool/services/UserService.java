@@ -51,7 +51,7 @@ public class UserService {
         }
     }
     public User getUser(String username, String realUser){
-        System.out.println(username + "'s profile is searched from " + realUser);
+        System.out.println(username + "'s profile is searched from " + realUser + " frontend.");
         User user = userRepository.findByUsername(username);
         if(user == null){
             throw new UserNotFoundException("Profile '" + username + "' is not found.");
