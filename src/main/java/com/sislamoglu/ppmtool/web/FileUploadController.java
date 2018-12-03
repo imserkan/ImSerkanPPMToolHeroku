@@ -25,7 +25,6 @@ public class FileUploadController {
         return ResponseEntity.ok(file);
     }
 
-
     @RequestMapping(method = RequestMethod.POST, value = "/")
     public void handleFileUpload(@RequestParam("file")MultipartFile file, RedirectAttributes redirectAttributes){
         storageRepository.store(file);

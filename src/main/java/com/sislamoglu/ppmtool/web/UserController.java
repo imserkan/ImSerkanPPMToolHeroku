@@ -68,18 +68,5 @@ public class UserController {
 
         return  new ResponseEntity<User>(newUser, HttpStatus.CREATED);
     }
-    @RequestMapping(method = RequestMethod.GET, value = "/profile/{username}")
-    public ResponseEntity<?> profileUser(@Valid @PathVariable("username") String username, Principal principal){
-        User validUser = userService.getUser(username, principal.getName());
-        return new ResponseEntity<User>(validUser, HttpStatus.OK);
-    }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/profile/{username}/edit")
-    public ResponseEntity<?> updateProfileUser(@Valid @PathVariable("username") String username,
-                                               @Valid @RequestBody User user , BindingResult bindingResult){
-        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
-        if(errorMap != null)return errorMap;
-        User newUser = userService.saveOrUpdateUser(user);
-        return  new ResponseEntity<User>(newUser, HttpStatus.CREATED);
-    }
 }
