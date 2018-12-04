@@ -1,6 +1,7 @@
 package com.sislamoglu.ppmtool.services;
 
 import com.sislamoglu.ppmtool.domain.User;
+import com.sislamoglu.ppmtool.domain.UserProfile;
 import com.sislamoglu.ppmtool.exceptions.UserNotFoundException;
 import com.sislamoglu.ppmtool.exceptions.UsernameAlreadyExistsException;
 import com.sislamoglu.ppmtool.repositories.UserRepository;
@@ -13,6 +14,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserProfileService userProfileService;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -30,6 +34,11 @@ public class UserService {
                 user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
                 user.setUsername(user.getUsername());
                 user.setConfirmPassword("");
+                UserProfile userProfile = new UserProfile();
+                userProfile.setUsername(user.getUsername());
+                userProfile.setUser(user);
+                user.setUserProfile(userProfile);
+                userProfileService.saveOrUpdateUserProfile(userProfile);
             }
             //Updating the User
             else{
@@ -37,13 +46,8 @@ public class UserService {
                 user.setUsername(user.getUsername());
                 user.setConfirmPassword("");
                 user.setFullname(user.getFullname());
-                user.setDepartment(user.getDepartment());
-                user.setHire_date(user.getHire_date());
-                user.setBirth_date(user.getBirth_date());
-                user.setGender(user.getGender());
-                user.setAddress(user.getAddress());
-                user.setPhoneNumber(user.getPhoneNumber());
             }
+
             return userRepository.save(user);
 
         }catch (Exception ex){
@@ -58,5 +62,4 @@ public class UserService {
         }
         return user;
     }
-
 }

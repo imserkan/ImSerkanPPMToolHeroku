@@ -1,7 +1,9 @@
 package com.sislamoglu.ppmtool.web;
 
 import com.sislamoglu.ppmtool.domain.User;
+import com.sislamoglu.ppmtool.domain.UserProfile;
 import com.sislamoglu.ppmtool.services.MapValidationErrorService;
+import com.sislamoglu.ppmtool.services.UserProfileService;
 import com.sislamoglu.ppmtool.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,20 +26,24 @@ public class UserProfileController {
     private UserService userService;
 
     @Autowired
+    private UserProfileService userProfileService;
+
+    @Autowired
     private MapValidationErrorService mapValidationErrorService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{username}")
     public ResponseEntity<?> profileUser(@PathVariable("username") String username, Principal principal){
-        User validUser = userService.getUser(username, principal.getName());
-        return new ResponseEntity<User>(validUser, HttpStatus.OK);
+        UserProfile validUserProfile = userProfileService.findUserProfileByUsername(principal.getName());
+        return new ResponseEntity<UserProfile>(validUserProfile, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/{username}/edit")
     public ResponseEntity<?> updateProfileUser(@PathVariable("username") String username,
-                                               @Valid @RequestBody User user , BindingResult bindingResult){
+                                               @Valid @RequestBody UserProfile userProfile ,
+                                               BindingResult bindingResult){
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
         if(errorMap != null)return errorMap;
-        User newUser = userService.saveOrUpdateUser(user);
-        return  new ResponseEntity<User>(newUser, HttpStatus.CREATED);
+        UserProfile newUserProfile = userProfileService.saveOrUpdateUserProfile(userProfile);
+        return  new ResponseEntity<UserProfile>(newUserProfile, HttpStatus.CREATED);
     }
 }
