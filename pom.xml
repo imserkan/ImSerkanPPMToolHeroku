@@ -78,8 +78,7 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.0</version>
         </dependency>
-
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
